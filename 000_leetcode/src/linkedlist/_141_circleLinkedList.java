@@ -2,7 +2,7 @@ package linkedlist;
 
 /**
  * https://leetcode-cn.com/problems/linked-list-cycle/
- * 
+ * 快慢指针
  * @author michaelyang
  *
  */
@@ -17,23 +17,19 @@ public class _141_circleLinkedList {
 		}
 	}
 
-	public boolean hasCycle(ListNode head) {
-		
-		if (head == null || head.next == null) {
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) {
 			return false;
 		}
-		
-		ListNode fast = head.next;
-		ListNode slow = head;
-		
-		while (fast != null && fast.next != null) {
-			if (slow == fast) {
-				return true;
-			}
-			slow = slow.next;
-			fast = fast.next;
+
+		ListNode slowNode = head;
+		ListNode fastNode = head.next;
+		while (fastNode != null && fastNode.next != null) {
+			slowNode = slowNode.next;
+			fastNode = fastNode.next.next;
+            if (slowNode == fastNode) return true;
 		}
 		return false;
-	}
+    }
 
 }
