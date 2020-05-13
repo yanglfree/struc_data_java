@@ -1,6 +1,11 @@
 package com.liang;
 
-
+/**
+ * 栈的实现 --- 用链表来实现
+ * @author michaelyang
+ *
+ * @param <E>
+ */
 public class Stack<E> {
 	
 	private List<E> list  = new LinkedList<>();
@@ -14,7 +19,7 @@ public class Stack<E> {
 	}
 	
 	public E pop() {
-		return list.remove(size() - 1);
+		return list.remove(list.size() - 1);
 	}
 	
 	public void clear() {

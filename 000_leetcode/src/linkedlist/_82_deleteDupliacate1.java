@@ -10,6 +10,6 @@ import com.liang.ListNode;
 public class _82_deleteDupliacate1 {
 	public ListNode deleteDuplicates(ListNode head) {
         ListNode temp = head;
-        return temp
+        return temp;
     }
 }

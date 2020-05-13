@@ -2,22 +2,25 @@ package com.liang;
 
 public interface List<E> {
 	
-	static final int ELEMENT_NOT_FOUND = -1; // 元素未找到
+	static final int ELEMENT_NOT_FOUND = -1;
 	
-	int size();
+	public int size();
+	
+	boolean isEmpty();
 	
 	void clear();
+	
+	int indexOf(E element);
+	
+	E remove(int index);
 	
 	void add(E element);
 	
 	void add(int index, E element);
 	
-	E remove(int index);
+	E set(E element, int index);
 	
 	E get(int index);
 	
-	void set(int index, E element);
-	int indexOf(E element);
-	
-	
+	boolean contains(E element);
 }

@@ -1,109 +1,109 @@
 package com.liang;
 
+
 public class SingleLinkedList<E> extends AbstractList<E>{
 	
-	private Node<E> first; //指向头结点的指针
+	private Node first;
 	
 	private static class Node<E>{
+		E element;
+		Node next;
 		
-		private E element;
-		private Node<E> next;
-		
-		public Node(E element, Node<E> next) {
+		public Node(E element, Node next) {
 			this.element = element;
 			this.next = next;
-		}
+		}	
+		
 	}
-	
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
 		size = 0;
 		first = null;
 	}
 
 	@Override
-	public void add(int index, E element) {
-		
-		rangeCheckForAdd(index);
-		
-		if (index == 0) {
-			first = new Node<E>(element, first);
+	public int indexOf(E element) {
+		Node<E> node = first;
+		if (element == null) {
+			for (int i = 0; i < size; i++) {
+				if (node.element == null) { return i; }
+				node = node.next;
+			}
 		}else {
-			Node<E> preN = node(index - 1);
-			preN.next = new Node<E>(element, preN.next);
-			size++;
+			for (int i = 0; i < size; i++) {
+				if (element.equals(node.element)) {return i;}
+				node = node.next;
+			}
 		}
+		return ELEMENT_NOT_FOUND;
 	}
 
 	@Override
 	public E remove(int index) {
-		
-		rangeCheckForAdd(index);
-		
+		rangeCheck(index);
 		Node<E> node = first;
 		if (index == 0) {
 			first = first.next;
-		}else {
-			Node<E> prevNode = node(index - 1);
-			node = prevNode.next;
-			prevNode.next = prevNode.next.next;
+		}else {		
+			Node<E> pre = node(index - 1);
+			node = pre.next;
+			pre.next = pre.next.next;
 		}
 		size--;
 		return node.element;
 	}
 
 	@Override
-	public E get(int index) {	
-		return node(index).element;
+	public void add(int index, E element) {
+		rangeCheckForAdd(index);
+		if (index == 0) {
+			first = new Node<>(element, first);
+		}else {
+			Node<E> pre = node(index - 1);
+			pre.next = new Node<>(element, pre.next);
+		}
+		size++;
 	}
 
 	@Override
-	public void set(int index, E element) {
-		Node<E> node = node(index);
-		node.element = element;
+	public E set(E element, int index) {
+		Node<E> oldNode = node(index);
+		Node<E> newNode = oldNode;
+		newNode.element = element;
+		return oldNode.element;
 	}
+
+	@Override
+	public E get(int index) {	
+		Node<E> node = node(index); 
+		return node.element;
+	}
+	
 	
 	private Node<E> node(int index) {
 		rangeCheck(index);
-		
 		Node<E> node = first;
 		for (int i = 0; i < index; i++) {
 			node = node.next;
 		}
 		return node;
 	}
-
-	@Override
-	public int indexOf(E element) {
-		if (element == null) {
-			Node<E> node = first;
-			for (int i = 0; i < size; i++) {
-				if (node.element == null) {
-					return i;
-				}
-				node = node.next;
-			}
-		} else {
-			Node<E> node = first;
-			for (int i = 0; i < size; i++) {
-				if (element.equals(node.element)) {
-					return i;
-				}
-				node = node.next;
-			}
-		}
-
-		return List.ELEMENT_NOT_FOUND;
-
-	}
-
+	
 	@Override
 	public String toString() {
-		return "LinkedList [first=" + first + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("size is: "+ size + ", [");
+		Node<E> node = first;
+		for (int i = 0; i < size; i++) {
+			if (i != 0) {
+				sb.append(", ");
+			}
+			sb.append(node.element);
+			node = node.next;
+		}
+		sb.append("]");
+		return sb.toString();
 	}
-	
-	
 
 }
