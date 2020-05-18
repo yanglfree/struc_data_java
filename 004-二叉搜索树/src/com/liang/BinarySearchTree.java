@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.xml.soap.Node;
+
 import com.liang.printer.BinaryTreeInfo;
 
 /**
@@ -98,13 +100,184 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{
 		}
 	}
 	
-	public int height() {
-		return height(root);
+	public TreeNode<E> remove(E element) {
+		// 度为0的节点  node.praent.left = null 或者node.parent.right = null
+		TreeNode<E> node = node(element);
+		if (node == null) {
+			return null;
+		}
+		size--;
+		//度为1 左节点: node.parent.left = child; child.parent = node.parent
+		//右节点: node.parent.right = child; child.parent = node.parent
+		//node是根节点: root = child; child.parent = null
+		
+		//度为2的节点: 找到node的前驱覆盖node  删除前驱节点
+		if (node.hasTwoChildren()) {
+			TreeNode<E> preNode = successorNode(node);
+			node.element = preNode.element;
+			node = preNode;
+		}
+		
+		TreeNode<E> repalcement =  node.left != null ? node.left : node.right;
+		if (repalcement != null) { //度为1的节点
+			repalcement.parent = node.parent;
+			
+			if (node.parent == null) {
+				root = repalcement;
+			}else {
+				if (node == node.parent.left) {
+					node.parent.left = repalcement;
+				}else if (node == node.parent.right) {
+					node.parent.right = repalcement;
+				}
+			}
+		}else {
+			if (node.parent == null) {
+				root = null;
+			}else {
+				 //node是叶子节点，但不是根节点
+				if (node == node.parent.right) {
+					node.parent.right = null;
+				}else {
+					node.parent.left = null;
+				}
+			}
+		}
+		
+		
+		return null;
 	}
 	
-	private int height(TreeNode<E> node) {
+	private TreeNode<E> node(E element) {
+		TreeNode<E> node = root;
+		while (node != null) {
+			int cmp = compare(element, node.element);
+			if (cmp == 0) return node;
+			if (cmp > 0) {
+				node = node.right;
+			}else {
+				node = node.left;
+			}
+		}
+		return node;
+	}
+	
+	
+	/**
+	 * 给出一个节点，找到前驱节点
+	 * @param node
+	 * @return
+	 */
+	public TreeNode<E> preseesorNode(TreeNode<E> node) {
+		//
+		if (node == null) {
+			return null;
+		}
+		TreeNode<E> p = node.left;
+		if (p != null) { // 在左子树找前驱节点
+			while (p.right != null) {
+				p = p.right;
+			}
+			return p;
+		}
+		while (node.parent != null && node == node.parent.left) {
+			node = node.parent;
+		}
+		return node.parent; 
+	}
+	
+	/**
+	 * 找出指定节点的后继节点
+	 * @param node
+	 * @return
+	 */
+	public TreeNode<E> successorNode(TreeNode<E> node) {
+		if (node == null) {
+			return null;
+		}
+		TreeNode<E> p = node.right;
+		if (p != null) { // 在左子树找前驱节点
+			while (p.left != null) {
+				p = p.left;
+			}
+			return p;
+		}
+		while (node.parent != null && node == node.parent.right) {
+			node = node.parent;
+		}
+		return node.parent; 
+	}
+	
+	/**
+	 * 是否为完全二叉树
+	 * @return
+	 */
+	public boolean isCompleted() {
+		//思路  分层遍历，然后判断三种情况
+		Queue<TreeNode<E>> queue = new LinkedList<>();
+		queue.offer(root);
+		boolean leaf = false;//是否叶子节点
+		while (!queue.isEmpty()) {
+			TreeNode<E> node = queue.poll();
+			if (leaf && !node.isLeaf()) {
+				return false;
+			}
+			if (node.hasTwoChildren()) {
+				queue.offer(node.left);
+				queue.offer(node.right);
+			}else if (node.left == null && node.right != null) {
+				return false;
+			} else {
+				//其他情况
+				leaf = true;
+			}
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * 层序遍历的方法求高度
+	 * @return
+	 */
+	public int height() {
+		if (root == null) {
+			return 0;
+		}
+		Queue<TreeNode<E>> queue = new LinkedList<>();
+		queue.offer(root);
+		// 思路：每一层的个数levelSize出栈后 层数height+1 然后下一层的size = 队列的size
+		int height = 0;
+		int levelSize = 1;
+		while (!queue.isEmpty()) {
+			TreeNode<E> node = queue.poll();
+			levelSize--;
+			if (node.left != null) {
+				queue.offer(node.left);
+			}
+			if (node.right != null) {
+				queue.offer(node.right);
+			}
+			if (levelSize == 0) {
+				height++;
+				levelSize = queue.size();
+			}
+		}
+		return height;
+	}
+
+
+	/**
+	 * 递归的方法求树的高度
+	 * @return
+	 */
+	public int height2() {
+		return height2(root);
+	}
+	
+	private int height2(TreeNode<E> node) {
 		if (node == null) { return 0; }
-		return Math.max(height(node.left), height(node.right)) + 1;
+		return Math.max(height2(node.left), height2(node.right)) + 1;
 	}
 
 	private static class TreeNode<E>{
@@ -116,6 +289,18 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{
 			this.element = element;
 			this.parent = parent;		
 		}
+		
+		/**
+		 * 是否叶子节点
+		 * @return
+		 */
+		public boolean isLeaf() {
+			return this.left == null && this.right == null;
+		}
+		
+		public boolean hasTwoChildren() {
+			return this.left != null && this.right != null;
+		}
 	}
 	
 	private void elementNotNullCheck(E element) {
@@ -125,12 +310,15 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{
 	}
 	
 	public boolean isEmpty() {
-	
 		return size == 0;
 	}
 	
 	public void clear() {
-		
+		root.left = null;
+		root.right = null;
+		root = null;
+		size = 0;
+			
 	}
 	
 	public void add(E element) {
@@ -178,10 +366,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{
 			return comparator.compare(e1, e2);
 		}
 		return ((Comparable<E>)e1).compareTo(e2);
-	}
-	
-	public void remove(E element) {
-		
 	}
 	
 	public boolean contains(E element) {

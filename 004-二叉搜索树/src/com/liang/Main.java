@@ -1,21 +1,31 @@
 package com.liang;
 
 import java.util.Comparator;
-
 import com.liang.BinarySearchTree.Visitor;
 import com.liang.printer.BinaryTrees;
 
 public class Main {
 
 	private static void test2() {
-		Integer data[] = new Integer[] { 7, 4, 9, 2, 5, 8, 11, 3 };
+		Integer data[] = new Integer[] { 7, 4, 9, 2, 5, 8, 11, 3, 12, 1 };
 		
-		BinarySearchTree<Person> bst = new BinarySearchTree<Person>();
+		BinarySearchTree<Integer> bst = new BinarySearchTree<>();
 		for (int i = 0; i < data.length; i++) {
-			bst.add(new Person(data[i]));
+			bst.add(data[i]);
 		}
 		
+//		BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>();
+//		for (int i = 0; i < 20; i++) {
+//			bst.add(i);
+//		}
+//		bst.remove(1);
+		bst.remove(7);
+//		bst.remove(12);
 		BinaryTrees.print(bst);
+//		System.out.println(" \n ----------------");
+//		System.out.println("height is: " + bst.height());
+		
+		
 	}
 
 	private static void test1() {
@@ -44,7 +54,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) {
-		test1();
+		test2();
 	}
 
 
